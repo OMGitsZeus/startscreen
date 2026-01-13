@@ -102,7 +102,7 @@ local function stopCinematic()
     SendNUIMessage({ joinClick = true })
 
     if currentMusic ~= nil then
-        TriggerEvent("InteractSound_CL:Stop", currentMusic)
+        TriggerEvent("InteractSound_CL:Stop")
         currentMusic = nil
     end
 
