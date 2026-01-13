@@ -26,10 +26,6 @@
   padding: 0;
 }
 
-body {
-  /* background-color: gray; */
-}
-
 #container {
   display: none;
 }
@@ -37,7 +33,7 @@ body {
 .driftDisplayTandem {
   font-size: 20px;
   position: absolute;
-  bottom:16%;
+  bottom: 16%;
   right: 48%;
   text-align: left;
   font-family: "Oswald-Light";
@@ -87,7 +83,6 @@ body {
   transform: rotate(180deg);
 }
 
-
 #containerSucces {
   display: none;
 }
@@ -104,7 +99,7 @@ body {
   position: absolute;
   top: 15%;
   right: 48%;
-  font-family: "Oswald-Light"; 
+  font-family: "Oswald-Light";
   font-style: italic;
   font-weight: 100;
   color: rgb(255, 196, 0);
@@ -126,20 +121,20 @@ body {
   text-align: justify;
   text-align-last: center;
   overflow-wrap: normal;
-  word-break:keep-all;
-  width: 300px
+  word-break: keep-all;
+  width: 300px;
 }
 
 #containerJoin {
-  /* display: none; */
+  display: none;
 }
 
 .joinButton {
   position: absolute;
   bottom: 10%;
-  left: 85%
+  left: 85%;
 }
 
-.navbar{
+.navbar {
   visibility: hidden;
 }
