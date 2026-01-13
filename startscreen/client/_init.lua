@@ -102,9 +102,7 @@ local function stopCinematic()
     SendNUIMessage({ joinClick = true })
 
     if currentMusic ~= nil then
-        SendNUIMessage({
-            stopMusic = true,
-        })
+        TriggerEvent("InteractSound_CL:Stop")
         currentMusic = nil
     end
 
@@ -129,10 +127,7 @@ local function startCinematic()
         cam.create("CAM_2")
 
         currentMusic = possibleMusic[math.random(1, #possibleMusic)]
-        SendNUIMessage({
-            playMusic = currentMusic,
-            volume = 0.07,
-        })
+        TriggerEvent("InteractSound_CL:PlayOnOne", currentMusic, 0.07)
 
         while waitingSpawn do
             for _, v in pairs(possibleCam) do

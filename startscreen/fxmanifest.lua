@@ -17,9 +17,7 @@ files {
     "client/web/fonts/Oswald-Regular.svg",
     "client/web/fonts/Oswald-Regular.ttf",
     "client/web/fonts/Oswald-Regular.woff",
-    "client/web/fonts/Oswald-Regular.woff2",
-    "client/web/audio/*",
-    "client/web/images/*.png"
+    "client/web/fonts/Oswald-Regular.woff2"
 }
 
 client_scripts {
