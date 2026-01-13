@@ -22,32 +22,7 @@ files {
 }
 
 client_scripts {
-    "@drift-extra-assets/src/NativeUIReloaded.lua",
-    "RageUI/RMenu.lua",
-    "RageUI/menu/RageUI.lua",
-    "RageUI/menu/Menu.lua",
-    "RageUI/menu/MenuController.lua",
-    "RageUI/components/*.lua",
-    "RageUI/menu/elements/*.lua",
-    "RageUI/menu/items/*.lua",
-    "RageUI/menu/panels/*.lua",
-    "RageUI/menu/windows/*.lua",
-    "config_cl.lua",
-    "client/_security/*.lua",
-    "client/class/*.lua",
-    "client/gameplay/**/*.lua",
-    "client/playerStuff/*.lua",
-    "client/shop/*.lua",
-    "client/module/*.lua",
-    "client/*.lua"
-}
-
-server_scripts {
-    '@mysql-async/lib/MySQL.lua',
-    "config_sv.lua",
-    "server/_security/*.lua",
-    "server/class/*.lua",
-    "server/crew/*.lua",
-    "server/discord/*.lua",
-    "server/*.lua"
+    "client/class/class_cam.lua",
+    "client/utils.lua",
+    "client/_init.lua"
 }
