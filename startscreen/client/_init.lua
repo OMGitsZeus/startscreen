@@ -1,56 +1,8 @@
-Events = nil
-loaded = false
-local first = true
 local waitingSpawn = true
-PlayersCrew = {}
-Crew = {}
-KingDriftCrew = {
-    name = "Nothing",
-    elo = 5,
-}
-CrewRanking = {}
-
-Citizen.CreateThread(function()
-    TriggerServerEvent("driftV:InitPlayer")
-    TriggerServerEvent("drift:GetRaceData")
-    player:new()
-    loaded = true
-
-    startCinematic()
-
-    SetPlayerInvincible(GetPlayerIndex(), true) 
-    RequestIpl('shr_int')
-end)
-
-RegisterNetEvent("syncEvents")
-AddEventHandler("syncEvents", function(ev)
-    Events = ev
-end)
-
-RegisterNetEvent("driftV:RefreshData")
-AddEventHandler("driftV:RefreshData", function(data)
-    p:SetCars(data.cars)
-    p:SetDriftPoint(data.driftPoint)
-    p:SetMoney(data.money)
-    p:InitSucces(data.succes)
-    p:setExp(data.exp)
-    p:setCrew(data.crew)
-    p:setCrewOwner(data.crewOwner)
-end)
-
-RegisterNetEvent("driftV:RefreshOtherPlayerData")
-AddEventHandler("driftV:RefreshOtherPlayerData", function(crew, pCrews, king)
-    PlayersCrew = pCrews
-    Crew = crew
-    KingDriftCrew = king
-end)
-
-RegisterNetEvent("driftV:RefreshCrewRanking", function(ranking)
-    CrewRanking = ranking
-end)
+local activeEntity = nil
+local currentMusic = nil
 
 local possibleCam = {
-
     {
         cam1 = vector3(-1820.38, 2970.94, 49.54),
         cam1fov = 40.0,
@@ -134,24 +86,62 @@ local possibleMusic = {
     "kendrik",
 }
 
-function startCinematic()
+local function cleanupEntity()
+    if activeEntity ~= nil and DoesEntityExist(activeEntity) then
+        DeleteEntity(activeEntity)
+    end
+    activeEntity = nil
+end
 
+local function stopCinematic()
+    if not waitingSpawn then
+        return
+    end
+
+    waitingSpawn = false
+    SendNUIMessage({ joinClick = true })
+
+    if currentMusic ~= nil then
+        TriggerEvent("InteractSound_CL:Stop", currentMusic)
+        currentMusic = nil
+    end
+
+    cleanupEntity()
+
+    DoScreenFadeOut(1500)
+    Wait(1500)
+    DoScreenFadeIn(2000)
+
+    RenderScriptCams(false, false, 0, true, true)
+    SetNuiFocus(false, false)
+
+    cam.delete("CAM_1")
+    cam.delete("CAM_2")
+    DisplayRadar(true)
+end
+
+local function startCinematic()
     Citizen.CreateThread(function()
         exports.spawnmanager.spawnPlayer()
         cam.create("CAM_1")
         cam.create("CAM_2")
-        local music = possibleMusic[math.random(1,#possibleMusic)]
-        TriggerEvent("InteractSound_CL:PlayOnOne", music, 0.07)
+
+        currentMusic = possibleMusic[math.random(1, #possibleMusic)]
+        TriggerEvent("InteractSound_CL:PlayOnOne", currentMusic, 0.07)
 
         while waitingSpawn do
-            for k,v in pairs(possibleCam) do
-                if not waitingSpawn then break end
-                local entity = nil
+            for _, v in pairs(possibleCam) do
+                if not waitingSpawn then
+                    break
+                end
+
+                cleanupEntity()
+
                 if v.entity ~= nil then
                     LoadModel(v.entity.model)
-                    entity = CreateVehicle(GetHashKey(v.entity.model), v.entity.pos, 0, 1)
-                    SetVehicleDirtLevel(entity, 0.0)
-                    SetVehicleOnGroundProperly(entity)
+                    activeEntity = CreateVehicle(GetHashKey(v.entity.model), v.entity.pos, 0, 1)
+                    SetVehicleDirtLevel(activeEntity, 0.0)
+                    SetVehicleOnGroundProperly(activeEntity)
                 end
 
                 DoScreenFadeIn(2000)
@@ -164,7 +154,6 @@ function startCinematic()
                 cam.setPos("CAM_2", v.cam2)
                 cam.setFov("CAM_2", v.cam2fov)
                 cam.lookAtCoords("CAM_2", v.cam2LookTo)
-
                 cam.setActive("CAM_2")
                 cam.switchToCam("CAM_2", "CAM_1", 15000)
 
@@ -174,19 +163,17 @@ function startCinematic()
                 end
 
                 if not waitingSpawn then
-                    DeleteEntity(entity)
                     break
                 end
 
                 DoScreenFadeOut(2000)
                 Wait(2100)
-                if entity ~= nil then
-                    DeleteEntity(entity)
-                end
             end
 
             Wait(0)
         end
+
+        cleanupEntity()
     end)
 
     DisplayRadar(false)
@@ -195,31 +182,16 @@ function startCinematic()
     SendNUIMessage({
         containerJoins = true,
     })
-
-    local music = possibleMusic[math.random(1,#possibleMusic)]
-    TriggerEvent("InteractSound_CL:PlayOnOne", music, 0.07)
 end
 
-RegisterNUICallback('joinServer', function(data)
-    if not waitingSpawn then return end
+Citizen.CreateThread(function()
+    startCinematic()
+    SetPlayerInvincible(GetPlayerIndex(), true)
+end)
 
-    waitingSpawn = false
-
-    SendNUIMessage({ joinClick = true })
-    TriggerEvent("InteractSound_CL:Stop")
-
-    DoScreenFadeOut(1500)
-    Wait(1500)
-    DoScreenFadeIn(2000)
-
-    RenderScriptCams(false, false, false, 0, 0)
-    SetNuiFocus(false, false)
-
-    cam.delete("CAM_1")
-    cam.delete("CAM_2")
-    DisplayRadar(true)
-
-    SetAudioFlag("LoadMPData", true)
-    SetBigmapActive(false, false)
-    EnableLobby()
+RegisterNUICallback("joinServer", function(_, cb)
+    stopCinematic()
+    if cb then
+        cb("ok")
+    end
 end)
