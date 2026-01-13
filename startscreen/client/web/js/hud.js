@@ -1,8 +1,6 @@
 $(function () {
   const resourceName = GetParentResourceName ? GetParentResourceName() : "startscreen";
 
-  $("#containerJoin").show();
-
   window.addEventListener("message", function (event) {
     const item = event.data;
 
